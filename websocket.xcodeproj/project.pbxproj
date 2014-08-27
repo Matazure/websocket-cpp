@@ -1,0 +1,210 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 45;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		4B0B4E68D01B11A1FA1C7A86 /* server.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FED3FF143414245049276546 /* server.cpp */; };
+		56CC4E14CD0CEA2D7A5EE98D /* socket.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1DD6A63F1C4A6D273E78EB6D /* socket.cpp */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		1DD6A63F1C4A6D273E78EB6D /* socket.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = socket.cpp; sourceTree = "<group>"; };
+		3BFE4B5A0F94AF8564531543 /* websocket.gyp */ = {isa = PBXFileReference; explicitFileType = sourcecode; path = websocket.gyp; sourceTree = "<group>"; };
+		55A34CFE3C25CA3D97739C53 /* libwebsocket.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libwebsocket.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		FED3FF143414245049276546 /* server.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = server.cpp; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		330B5D64C7E819AC8C0ED27E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		3918E23C2D8C65735CB4F225 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				55A34CFE3C25CA3D97739C53 /* libwebsocket.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		6D26C5584D80633CCDC5E8E5 /* Build */ = {
+			isa = PBXGroup;
+			children = (
+				3BFE4B5A0F94AF8564531543 /* websocket.gyp */,
+			);
+			name = Build;
+			sourceTree = "<group>";
+		};
+		B6A6FE17395F8D1D86B38A20 = {
+			isa = PBXGroup;
+			children = (
+				C85D911D095262954D999553 /* Source */,
+				3918E23C2D8C65735CB4F225 /* Products */,
+				6D26C5584D80633CCDC5E8E5 /* Build */,
+			);
+			sourceTree = "<group>";
+		};
+		C85D911D095262954D999553 /* Source */ = {
+			isa = PBXGroup;
+			children = (
+				FED3FF143414245049276546 /* server.cpp */,
+				1DD6A63F1C4A6D273E78EB6D /* socket.cpp */,
+			);
+			name = Source;
+			path = websocket;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		CD631EF93C22680E1B57C21C /* websocket */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3CFA5DBA114C7DE01F56D2F7 /* Build configuration list for PBXNativeTarget "websocket" */;
+			buildPhases = (
+				AA3E7A940C42C31EB509C8E2 /* Sources */,
+				330B5D64C7E819AC8C0ED27E /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = websocket;
+			productName = websocket;
+			productReference = 55A34CFE3C25CA3D97739C53 /* libwebsocket.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		E6D6114296CDE1D9D5874B3A /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+			};
+			buildConfigurationList = 5BFDCF1F173EAA548E9AEB61 /* Build configuration list for PBXProject "websocket" */;
+			compatibilityVersion = "Xcode 3.2";
+			hasScannedForEncodings = 1;
+			mainGroup = B6A6FE17395F8D1D86B38A20;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				CD631EF93C22680E1B57C21C /* websocket */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		AA3E7A940C42C31EB509C8E2 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				56CC4E14CD0CEA2D7A5EE98D /* socket.cpp in Sources */,
+				4B0B4E68D01B11A1FA1C7A86 /* server.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		5F6F921CBAB71BEBEC423B47 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "c++11";
+				CLANG_CXX_LIBRARY = "libc++";
+				CONFIGURATION_BUILD_DIR = ./;
+				EXECUTABLE_PREFIX = lib;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"HTTP_PARSER_STRICT=0",
+					NDEBUG,
+				);
+				HEADER_SEARCH_PATHS = (
+					.,
+					/usr/local/include,
+					"websocket/http-parser",
+				);
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
+				OTHER_CPLUSPLUSFLAGS = (
+					"-ftemplate-depth=512",
+					"-Os",
+				);
+				PRODUCT_NAME = websocket;
+			};
+			name = Release;
+		};
+		86CB592A4278C5E31A6C66A8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				INTERMEDIATE_DIR = "$(PROJECT_DERIVED_FILE_DIR)/$(CONFIGURATION)";
+				SHARED_INTERMEDIATE_DIR = "$(SYMROOT)/DerivedSources/$(CONFIGURATION)";
+			};
+			name = Release;
+		};
+		9EFFBE292D15237AD7978BA5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "c++11";
+				CLANG_CXX_LIBRARY = "libc++";
+				CONFIGURATION_BUILD_DIR = ./;
+				EXECUTABLE_PREFIX = lib;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"HTTP_PARSER_STRICT=0",
+					DEBUG,
+					_DEBUG,
+				);
+				HEADER_SEARCH_PATHS = (
+					.,
+					/usr/local/include,
+					"websocket/http-parser",
+				);
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
+				OTHER_CPLUSPLUSFLAGS = (
+					"-ftemplate-depth=512",
+					"-O0",
+				);
+				PRODUCT_NAME = websocket;
+			};
+			name = Debug;
+		};
+		C5996EAB1746E28C11344E57 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				INTERMEDIATE_DIR = "$(PROJECT_DERIVED_FILE_DIR)/$(CONFIGURATION)";
+				SHARED_INTERMEDIATE_DIR = "$(SYMROOT)/DerivedSources/$(CONFIGURATION)";
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		3CFA5DBA114C7DE01F56D2F7 /* Build configuration list for PBXNativeTarget "websocket" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9EFFBE292D15237AD7978BA5 /* Debug */,
+				5F6F921CBAB71BEBEC423B47 /* Release */,
+			);
+			defaultConfigurationIsVisible = 1;
+			defaultConfigurationName = Debug;
+		};
+		5BFDCF1F173EAA548E9AEB61 /* Build configuration list for PBXProject "websocket" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C5996EAB1746E28C11344E57 /* Debug */,
+				86CB592A4278C5E31A6C66A8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 1;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = E6D6114296CDE1D9D5874B3A /* Project object */;
+}

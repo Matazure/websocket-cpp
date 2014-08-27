@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>2B18C354-2483-4CC4-A466-E8D3BD098A62</string>
+	<key>IDESourceControlProjectName</key>
+	<string>websocket</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>71164991-13C3-4583-B4B0-EBAD3F195D39</key>
+		<string>https://code.jd.com/jd_5c12893388414/matazure.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>socketio/websocket/websocket.xcodeproj/project.xcworkspace</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>71164991-13C3-4583-B4B0-EBAD3F195D39</key>
+		<string>../../../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://code.jd.com/jd_5c12893388414/matazure.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>110</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>71164991-13C3-4583-B4B0-EBAD3F195D39</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>71164991-13C3-4583-B4B0-EBAD3F195D39</string>
+			<key>IDESourceControlWCCName</key>
+			<string>matazure</string>
+		</dict>
+	</array>
+</dict>
+</plist>
