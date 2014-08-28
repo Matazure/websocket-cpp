@@ -5,31 +5,31 @@
 	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
 	<false/>
 	<key>IDESourceControlProjectIdentifier</key>
-	<string>3CC7BB5B-AD17-486C-A09C-0F575D51824A</string>
+	<string>0C14E448-9F7D-488C-B16C-ACFA5733AA22</string>
 	<key>IDESourceControlProjectName</key>
 	<string>websocket_example_basic</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
 		<key>02ABE812-2D61-40FE-9877-E82D94C1F35B</key>
 		<string>https://github.com/zhangzhimin/http-parser.git</string>
-		<key>71164991-13C3-4583-B4B0-EBAD3F195D39</key>
-		<string>https://code.jd.com/jd_5c12893388414/matazure.git</string>
+		<key>9BDA3D32-2060-41CE-87A3-27D7979D6ED5</key>
+		<string>https://github.com/Matazure/websocket-cpp.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
-	<string>socketio/websocket/example/basic/websocket_example_basic.xcodeproj/project.xcworkspace</string>
+	<string>example/basic/websocket_example_basic.xcodeproj/project.xcworkspace</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
 		<key>02ABE812-2D61-40FE-9877-E82D94C1F35B</key>
-		<string>../../../../http-parser</string>
-		<key>71164991-13C3-4583-B4B0-EBAD3F195D39</key>
-		<string>../../../../../..</string>
+		<string>../../../../websocket/http-parser</string>
+		<key>9BDA3D32-2060-41CE-87A3-27D7979D6ED5</key>
+		<string>../../../..</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
-	<string>https://code.jd.com/jd_5c12893388414/matazure.git</string>
+	<string>https://github.com/Matazure/websocket-cpp.git</string>
 	<key>IDESourceControlProjectVersion</key>
 	<integer>110</integer>
 	<key>IDESourceControlProjectWCCIdentifier</key>
-	<string>71164991-13C3-4583-B4B0-EBAD3F195D39</string>
+	<string>9BDA3D32-2060-41CE-87A3-27D7979D6ED5</string>
 	<key>IDESourceControlProjectWCConfigurations</key>
 	<array>
 		<dict>
@@ -44,9 +44,9 @@
 			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
 			<string>public.vcs.git</string>
 			<key>IDESourceControlWCCIdentifierKey</key>
-			<string>71164991-13C3-4583-B4B0-EBAD3F195D39</string>
+			<string>9BDA3D32-2060-41CE-87A3-27D7979D6ED5</string>
 			<key>IDESourceControlWCCName</key>
-			<string>matazure</string>
+			<string>websocket</string>
 		</dict>
 	</array>
 </dict>
