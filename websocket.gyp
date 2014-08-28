@@ -71,6 +71,7 @@
                     },
                     'all_dependent_settings':
                     {
+                        'include_dirs': [ '.' ],
                         'xcode_settings':{
                             'CLANG_CXX_LANGUAGE_STANDARD': 'c++11',
                             'CLANG_CXX_LIBRARY': 'libc++',
@@ -98,6 +99,7 @@
                     },
                     'all_dependent_settings':
                     {
+                        'include_dirs': [ '.' ],
                         'cflags': ['-std=c++11','-lgcc-eh', '-fexceptions', '-frtti'],
                         'cflags!': ['-fno-exceptions', '-fno-rtti'],
                         'cflags_cc!': ['-fno-exceptions', '-fno-rtti'],
