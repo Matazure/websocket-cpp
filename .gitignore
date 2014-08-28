@@ -2,3 +2,5 @@
 out
 *.a
 .*
+example/basic/client
+example/basic/server
