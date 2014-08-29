@@ -103,10 +103,6 @@ namespace websocket{
         void on_error(error_slot f)             {  _sp_error_signal->connect(f); }
         //emit when receive text payload data.
         void on_message(message_slot f)         {  _sp_message_signal->connect(f); }
-        
-        ~socket(){
-            std::cout << "Release Socket. " << std::endl;
-        }
 
     private:
         

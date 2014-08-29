@@ -7,17 +7,19 @@ int main(){
     
     //connect to server
    // auto sp_socket = websocket::connect(iosev, websocket::ip::tcp::endpoint(websocket::ip::tcp::v4(), 4231));
-    auto sp_socket = websocket::connect(iosev, "ws://0.0.0.0:4231/engine.io/?EIO=2&transport=websocket");
-
-    sp_socket->send("4Hi Server");
-    
-    sp_socket->on_message([sp_socket](const std::string &s){
-        std::cout << "on message: " << s << std::endl;
-    });
-    
-    sp_socket->on_disconnect([](){
-        std::cout << "socket disconnect. " << std::endl;
-    });
+    {
+        auto sp_socket = websocket::connect(iosev, "ws://127.0.0.1:4231/engine.io/?EIO=2&transport=websocket");
+        
+        sp_socket->send("4Hi Server");
+        
+        sp_socket->on_message([sp_socket](const std::string &s){
+            std::cout << "on message: " << s << std::endl;
+        });
+        
+        sp_socket->on_disconnect([](){
+            std::cout << "socket disconnect. " << std::endl;
+        });
+    }
     
     iosev.run();
     

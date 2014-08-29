@@ -51,7 +51,7 @@
         {
             'target_name' : 'websocket',
             'type' : 'static_library',
-            'dependencies': ['./websocket/http-parser/http_parser.gyp:http_parser'],
+            'dependencies': ['./websocket/vendors/http-parser/http_parser.gyp:http_parser'],
             'include_dirs':['.', '/usr/local/include'],
             'sources' : ['./websocket/socket.cpp', './websocket/server.cpp'],
             # 'product_dir':'./lib',
