@@ -9,7 +9,12 @@ namespace websocket{
         typedef boost::signals2::signal<void (shared_ptr<socket>)>          connection_signal;
         typedef typename connection_signal::slot_type                       connection_slot;
 
-        server(io_service &iosev, ip::tcp::endpoint ep): _iosev(iosev), _endpoint(ep), _acceptor(iosev, _endpoint), _sp_connection_signal(new connection_signal){
+        server(io_service &iosev): _iosev(iosev),_sp_acceptor(nullptr), _sp_connection_signal(new connection_signal){
+            
+        }
+        
+        void listen(size_t port){
+            _sp_acceptor = make_shared<ip::tcp::acceptor>(_iosev, ip::tcp::endpoint(ip::tcp::v4(), port));
             this->do_accept();
         }
 
@@ -23,8 +28,7 @@ namespace websocket{
     private:
         io_service                                  &_iosev;
 
-        ip::tcp::endpoint                           _endpoint;
-        ip::tcp::acceptor                           _acceptor;
+        shared_ptr<ip::tcp::acceptor>               _sp_acceptor;
 
         std::vector<shared_ptr<socket>>             _sockets;
         

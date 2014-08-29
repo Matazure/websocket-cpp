@@ -55,6 +55,12 @@
             'include_dirs':['.', '/usr/local/include'],
             'sources' : ['./websocket/socket.cpp', './websocket/server.cpp'],
             # 'product_dir':'./lib',
+
+            'all_dependent_settings':
+            {
+                'include_dirs': [ '.', '/usr/local/include' ],
+            },
+
             'conditions':[
                 ['OS=="mac"',{
                     'xcode_settings':{

@@ -5,7 +5,8 @@ int main(){
     
     websocket::io_service iosev;
     //create an server
-    auto sp_server = websocket::listen(iosev, websocket::ip::tcp::endpoint(websocket::ip::tcp::v4(), 4231));
+    
+    auto sp_server = websocket::listen(iosev, 4231);
     
     //connection event
     sp_server->on_connection([](std::shared_ptr<websocket::socket> sp_socket){

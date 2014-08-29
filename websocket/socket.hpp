@@ -67,7 +67,7 @@ namespace websocket{
         , _error_code(error_code::null)
         {}
 
-        void connect(ip::tcp::endpoint ep);
+        void connect(const std::string &url);
 
         //send text payload data
         void send(const std::string &msg);
@@ -110,6 +110,8 @@ namespace websocket{
 
     private:
         
+        void connect();
+        
         void send_frame(shared_ptr<frame>, std::function<void (void)> callback = std::function<void (void)>());
         
         //emit error event(signal), then close
@@ -133,6 +135,10 @@ namespace websocket{
         
         bool                                                        _is_client;
         state_code                                                  _state;
+        
+        //
+        std::map<std::string, std::string>                          _url_info;
+        ip::tcp::resolver::iterator                                 _endpoint_iterator;
         
         ip::tcp::socket                                             _asio_socket;
         std::queue<shared_ptr<frame>>                               _frames;

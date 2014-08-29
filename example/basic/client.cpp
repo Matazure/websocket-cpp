@@ -6,8 +6,9 @@ int main(){
     websocket::io_service iosev;
     
     //connect to server
-    auto sp_socket = websocket::connect(iosev, websocket::ip::tcp::endpoint(websocket::ip::tcp::v4(), 4231));
-    
+   // auto sp_socket = websocket::connect(iosev, websocket::ip::tcp::endpoint(websocket::ip::tcp::v4(), 4231));
+    auto sp_socket = websocket::connect(iosev, "ws://0.0.0.0:4231/engine.io/?EIO=2&transport=websocket");
+
     sp_socket->send("4Hi Server");
     
     sp_socket->on_message([sp_socket](const std::string &s){

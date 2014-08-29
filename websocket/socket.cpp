@@ -58,19 +58,56 @@ extern "C"{
     
 }
 
-
 namespace websocket{
     
-    void socket::connect(ip::tcp::endpoint ep){
+    void socket::connect(){
         auto self = shared_from_this();
-        _asio_socket.async_connect(ep,[self](boost::system::error_code ec){
+        
+        if (self->_endpoint_iterator == ip::tcp::resolver::iterator()){
+            throw std::runtime_error("failed to connect .");
+        }
+        _asio_socket.async_connect(*self->_endpoint_iterator,[self](boost::system::error_code ec){
             if (ec){
-                std::cout << "failed to connect" << std::endl;
-                return;
+                ++self->_endpoint_iterator;
+                self->connect();
+            }else{
+                self->handshake();
             }
-            
-            self->handshake();
         });
+    }
+    
+    void socket::connect(const std::string &url){
+        auto p_url = new http_parser_url;
+        if (http_parser_parse_url(url.c_str(), url.size(), false, p_url)){
+            throw std::runtime_error(url+" is invalid.");
+        }
+        
+        _url_info["scheme"] = std::string(url.begin()+p_url->field_data[0].off, url.begin()+p_url->field_data[0].off+p_url->field_data[0].len);
+        _url_info["host"] = std::string(url.begin()+p_url->field_data[1].off, url.begin()+p_url->field_data[1].off+p_url->field_data[1].len);
+        _url_info["port"] = std::string(url.begin()+p_url->field_data[2].off, url.begin()+p_url->field_data[2].off+p_url->field_data[2].len);
+        _url_info["path"] = std::string(url.begin()+p_url->field_data[3].off, url.begin()+p_url->field_data[3].off+p_url->field_data[3].len);
+        _url_info["query"] = std::string(url.begin()+p_url->field_data[4].off, url.begin()+p_url->field_data[4].off+p_url->field_data[4].len);
+        
+        ip::tcp::resolver resolver(_iosev);
+        ip::tcp::resolver::query query(_url_info["host"], _url_info["port"], ip::resolver_query_base::canonical_name);
+        _endpoint_iterator = resolver.resolve(query);
+        connect();
+        
+        
+
+//        if (_url_info["scheme"].empty()){
+//            throw std::runtime_error("url scheme field is needed. ");
+//        }
+//        if (_url_info["scheme"] == "wss"){
+//            assert(false);//todo
+//            
+//            return;
+//        }
+//        if (_url_info["scheme"] == "ws"){
+//            
+//            return;
+//        }
+//        throw std::runtime_error("unexpected scheme field.");
     }
     
     void socket::send(const std::string &msg){
