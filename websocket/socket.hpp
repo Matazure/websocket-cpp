@@ -55,6 +55,9 @@ namespace websocket{
         
         typedef boost::signals2::signal<void (const std::string &)>     message_signal;
         typedef typename message_signal::slot_type                      message_slot;
+        
+        typedef std::function<void (error_code ec)>                     send_callback_type;
+        
 
     public:
         socket(io_service &iosev)
@@ -103,12 +106,33 @@ namespace websocket{
         void on_error(error_slot f)             {  _sp_error_signal->connect(f); }
         //emit when receive text payload data.
         void on_message(message_slot f)         {  _sp_message_signal->connect(f); }
+        
+        ~socket(){
+            std::cout << "Release socket. " << std::endl;
+        }
+        
+    private:
+        void emit_connect(){
+            (*_sp_connect_signal)();
+        }
+        
+        void emit_disconnect(){
+            (*_sp_connect_signal)();
+        }
+        
+        void emit_error(error_code ec){
+            (*_sp_error_signal)(ec);
+        }
+        
+        void emit_message(const std::string &msg){
+            (*_sp_message_signal)(msg);
+        }
 
     private:
         
         void connect();
         
-        void send_frame(shared_ptr<frame>, std::function<void (void)> callback = std::function<void (void)>());
+        void send_frame(shared_ptr<frame>, send_callback_type callback = send_callback_type());
         
         //emit error event(signal), then close
         void abnormally_close(error_code);
@@ -116,7 +140,7 @@ namespace websocket{
         //close asio socket,  emit  disconnect event(signal)
         void close_tcp_socket();
 
-        void wait_handshake(shared_ptr<connection_signal> );
+        void wait_handshake(shared_ptr<server> );
 
         void handshake();
 
@@ -133,12 +157,14 @@ namespace websocket{
         state_code                                                  _state;
         
         //
+        std::string                                                 _url;
         std::map<std::string, std::string>                          _url_info;
+        std::map<std::string, std::string>                          _header;
         ip::tcp::resolver::iterator                                 _endpoint_iterator;
         
         ip::tcp::socket                                             _asio_socket;
         std::queue<shared_ptr<frame>>                               _frames;
-        std::map<shared_ptr<frame>, std::function<void (void)>>     _write_callbacks;
+        std::map<shared_ptr<frame>, send_callback_type>             _write_callbacks;
         streambuf                                                   _read_buf;
         
         shared_ptr<connect_signal>          _sp_connect_signal;
@@ -147,7 +173,6 @@ namespace websocket{
         shared_ptr<message_signal>          _sp_message_signal;
         
         uint16_t                                                    _close_code;
-        
         error_code                                                  _error_code;
     };
 

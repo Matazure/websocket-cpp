@@ -8,6 +8,14 @@ int main(){
     
     auto sp_server = websocket::listen(iosev, 4231);
     
+    sp_server->of("/chat")->on_connection([](std::shared_ptr<websocket::socket> sp_socket){
+        sp_socket->send("I'm chat endpoint. ");
+        
+        sp_socket->on_message([](const std::string &s){
+            std::cout << "chat channel message: " << s << std::endl;
+        });
+    });
+    
     //connection event
     sp_server->on_connection([](std::shared_ptr<websocket::socket> sp_socket){
         //send message

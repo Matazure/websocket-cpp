@@ -1,6 +1,7 @@
 #pragma once
 
 #include <websocket/socket.hpp>
+#include <websocket/channel.hpp>
 
 namespace websocket{
 
@@ -10,7 +11,7 @@ namespace websocket{
         typedef typename connection_signal::slot_type                       connection_slot;
 
         server(io_service &iosev): _iosev(iosev),_sp_acceptor(nullptr), _sp_connection_signal(new connection_signal){
-            
+        
         }
         
         void listen(size_t port){
@@ -19,7 +20,18 @@ namespace websocket{
         }
 
         void on_connection(connection_slot callback){
-            _sp_connection_signal->connect(callback);
+//            _sp_connection_signal->connect(callback);
+            of("/")->on_connection(callback);
+        }
+        
+        shared_ptr<channel> of(const std::string &path){
+            
+            if (_sp_channels[path])
+                return _sp_channels[path];
+            else{
+                _sp_channels[path] = make_shared<channel>();
+                return _sp_channels[path];
+            }
         }
 
     private:
@@ -33,6 +45,8 @@ namespace websocket{
         std::vector<shared_ptr<socket>>             _sockets;
         
         shared_ptr<connection_signal>               _sp_connection_signal;
+        
+        std::map<std::string, shared_ptr<channel>>  _sp_channels;
     };
 
 }

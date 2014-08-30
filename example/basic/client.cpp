@@ -8,7 +8,7 @@ int main(){
     //connect to server
    // auto sp_socket = websocket::connect(iosev, websocket::ip::tcp::endpoint(websocket::ip::tcp::v4(), 4231));
     {
-        auto sp_socket = websocket::connect(iosev, "ws://127.0.0.1:4231/engine.io/?EIO=2&transport=websocket");
+        auto sp_socket = websocket::connect(iosev, "ws://manager:4231");
         
         sp_socket->send("4Hi Server");
         

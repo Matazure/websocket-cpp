@@ -2,14 +2,16 @@
 
 // if the asio lib execute the taskes by multiply thread, the http_parser is not safe.
 #include <http_parser.h>
+#include <websocket/server.hpp>
 #include <websocket/detail/frame.hpp>
 #include <websocket/detail/utilities.hpp>
 
 std::pair<std::string, std::string>     header_tmp_pair;
-std::map<std::string, std::string>      http_headers;
+std::map<std::string, std::string>      global_http_header;
+std::string                             global_url;
 
 void clear_http_parser(){
-    http_headers.clear();
+    global_http_header.clear();
 }
 
 extern "C"{
@@ -21,7 +23,7 @@ extern "C"{
     
     
     int on_url(http_parser *, const char *p, size_t len){
-        
+        global_url = std::string(p, p+len);
         return 0;
     }
     
@@ -37,7 +39,7 @@ extern "C"{
     
     int on_header_value(http_parser *, const char *p, size_t len){
         header_tmp_pair.second = std::string(p, p+len);
-        http_headers.insert(header_tmp_pair);
+        global_http_header.insert(header_tmp_pair);
         return 0;
     }
     
@@ -66,7 +68,8 @@ namespace websocket{
         if (self->_endpoint_iterator == ip::tcp::resolver::iterator()){
             throw std::runtime_error("failed to connect .");
         }
-        _asio_socket.async_connect(*self->_endpoint_iterator,[self](boost::system::error_code ec){
+        
+        _asio_socket.async_connect(self->_endpoint_iterator->endpoint(), [self](boost::system::error_code ec){
             if (ec){
                 ++self->_endpoint_iterator;
                 self->connect();
@@ -81,7 +84,6 @@ namespace websocket{
         if (http_parser_parse_url(url.c_str(), url.size(), false, p_url)){
             throw std::runtime_error(url+" is invalid.");
         }
-        
         _url_info["scheme"] = std::string(url.begin()+p_url->field_data[0].off, url.begin()+p_url->field_data[0].off+p_url->field_data[0].len);
         _url_info["host"] = std::string(url.begin()+p_url->field_data[1].off, url.begin()+p_url->field_data[1].off+p_url->field_data[1].len);
         _url_info["port"] = std::string(url.begin()+p_url->field_data[2].off, url.begin()+p_url->field_data[2].off+p_url->field_data[2].len);
@@ -141,7 +143,11 @@ namespace websocket{
         
         auto self = shared_from_this();
         auto sp_frame = frame::create_close_frame(code, reason);
-        auto f = [self, code](){
+        auto f = [self, code](error_code ec){
+            if (ec != error_code::null){
+                assert(false);
+            }
+            
             self->_close_code = code;
             self->state(state_code::closing);
         };
@@ -149,7 +155,7 @@ namespace websocket{
         send_frame(sp_frame, f);
     }
     
-    void socket::send_frame(shared_ptr<frame> sp_frame, std::function<void (void)> f){
+    void socket::send_frame(shared_ptr<frame> sp_frame, send_callback_type f){
         auto self = shared_from_this();
         _iosev.post([self, sp_frame, f](){
             bool process_free = self->_frames.empty();
@@ -178,11 +184,11 @@ namespace websocket{
         (*_sp_disconnect_signal)();
     }
 
-    void socket::wait_handshake(shared_ptr<connection_signal> sp_connection_signal){
+    void socket::wait_handshake(shared_ptr<server> sp_server){
         auto self = shared_from_this();
         assert(_state != state_code::open);
         //receive request
-        async_read_until(_asio_socket, _read_buf, "\r\n\r\n", [self, sp_connection_signal](boost::system::error_code ec, size_t len){
+        async_read_until(_asio_socket, _read_buf, "\r\n\r\n", [self, sp_server](boost::system::error_code ec, size_t len){
             //parser request
             std::string request;
             request.resize(len);
@@ -200,13 +206,22 @@ namespace websocket{
             settings.on_body = on_body;
             settings.on_message_complete = on_message_complete;
             http_parser_execute(&request_parser, &settings, request.c_str(), request.size());
-            
+            //copy globals http_header to member headers
+            self->_header = std::move(global_http_header);
+            auto p_url = new http_parser_url;
+            if (http_parser_parse_url(global_url.c_str(), global_url.size(), false, p_url)){
+                throw std::runtime_error(global_url+" is invalid.");
+            }
+            self->_url_info["path"] = std::string(global_url.begin()+p_url->field_data[3].off, global_url.begin()+p_url->field_data[3].off+p_url->field_data[3].len);
+          
             //create response
-            bool success = true;
-            auto key = http_headers["Sec-WebSocket-Key"];
-            std::string response;
             bool handshake = false;
-            if (http_headers["Upgrade"] != "websocket" || key.empty()){
+            auto key = self->_header["Sec-WebSocket-Key"];
+            std::string response;
+            if (key.size() != 24){
+                response.append("HTTP/1.1 300  Bad Request\r\n");
+                handshake = false;
+            }else if (self->_header["Upgrade"] != "websocket" || key.empty()){
                 response.append("HTTP/1.1 300  Bad Request\r\n");
                 handshake = false;
             }else{
@@ -215,19 +230,31 @@ namespace websocket{
                 response.append("Upgrade: websocket\r\n");
                 response.append("Connection: Upgrade\r\n");
                 response.append("Sec-WebSocket-Accept: ").append(accept_key).append("\r\n");
-                // response.append("Sec-WebSocket-Protocol: chat\r\n");
+//                if (!self->_header["Sec-WebSocket-Version"].empty()){
+//                    response.append("Sec-WebSocket-Version: ")
+//                    .append(self->_header["Sec-WebSocket-Version"])
+//                    .append("\r\r");
+//                }
+//                if (!self->_header["Sec-WebSocket-Protocol"].empty()){
+//                    
+//                    
+//                    //select a protocol
+//                    response.append("Sec-WebSocket-Protocol: ")
+//                    .append(self->_header["Sec-WebSocket-Version"])
+//                    .append("\r\r");
+//                }
                 response.append("\r\n");
                 handshake = true;
             }
             clear_http_parser();
             //send response
-            async_write(self->_asio_socket, buffer(response), [self, sp_connection_signal, handshake](boost::system::error_code ec, size_t){
+            async_write(self->_asio_socket, buffer(response), [self, sp_server, handshake](boost::system::error_code ec, size_t){
                 if (ec){
                     return;  //do none
                 }
                 if (handshake){
                     self->state(state_code::open);
-                    (*sp_connection_signal)(self);
+                    (*(sp_server->of(self->_url_info["path"])->sp_connection_signal))(self);
                     self->do_read();
                     self->do_write();
                 }else{
@@ -240,13 +267,24 @@ namespace websocket{
     void socket::handshake(){
         auto key = detail::generate_sec_websocket_key();
         std::string request;
-        request.append("GET //engine.io/?EIO=2&transport=websocket HTTP/1.1\r\n");
+        request.append("GET /")
+        .append(_url_info["path"]);
+        if (!_url_info["query"].empty()){
+            request.append("?").append(_url_info["query"]);
+        }
+        request.append(" HTTP/1.1\r\n");
+        
         request.append("Upgrade: websocket\r\n");
-        request.append("Host: localhost\r\n");
+        request.append("Host: ")
+        .append(_url_info["host"]);
+        if (!_url_info["port"].empty()){
+            request.append(":").append(_url_info["port"]);
+        }
+        request.append("\r\n");
         request.append("Connection: Upgrade\r\n");
         request.append("Sec-WebSocket-Key: ").append(key).append("\r\n");
-        request.append("Sec-WebSocket-Protocol: chat, superchat\r\n");
-        request.append("Sec-WebSocket-Version: 8\r\n");
+       // request.append("Sec-WebSocket-Protocol: chat, superchat\r\n");
+        request.append("Sec-WebSocket-Version: 13\r\n");  //must  has
         request.append("\r\n");
         
         auto accept = detail::generate_sec_websocket_accept(key);
@@ -277,9 +315,10 @@ namespace websocket{
                 settings.on_body = on_body;
                 settings.on_message_complete = on_message_complete;
                 http_parser_execute(&request_parser, &settings, response.c_str(), response.size());
+                self->_header = std::move(global_http_header);
              
-                if (http_headers["Sec-WebSocket-Accept"] != accept){
-                    std::cout << "error accept" << std::endl;
+                if (self->_header["Sec-WebSocket-Accept"] != accept){
+                    throw std::runtime_error("the Sec-WebSocket-Aceept is not matched. ");
                 }else{
                     self->state(state_code::open);
                     (*self->_sp_connect_signal)();
@@ -351,7 +390,11 @@ namespace websocket{
                                 }
                             }else{
                                 auto sp_close_frame = frame::create_close_frame(get_close_code(sp_frame->payload), "");
-                                self->send_frame(sp_close_frame, [self](){
+                                self->send_frame(sp_close_frame, [self](error_code ec){
+                                    if (ec != error_code::null){
+                                        assert(false);
+                                    }
+                                    
                                     self->state(state_code::closed_clearnly);
                                     self->close_tcp_socket();
                                 });
@@ -439,16 +482,17 @@ namespace websocket{
         detail::write_frame(os, *sp_frame);
         auto self = shared_from_this();
         async_write(_asio_socket, buf, [self, sp_frame](boost::system::error_code ec, size_t len){
+            auto error = error_code::transmition;
             if (ec || len == 0){
-                self->abnormally_close(error_code::transmition);
-                return;
+                error = error_code::transmition;
+                self->abnormally_close(error);
+            }else{
+                error = error_code::null;
+                self->do_write();
             }
-            
             if (self->_write_callbacks[sp_frame]){
-                self->_write_callbacks[sp_frame]();
+                self->_write_callbacks[sp_frame](error);
             }
-            
-            self->do_write();
         });
     }
 
