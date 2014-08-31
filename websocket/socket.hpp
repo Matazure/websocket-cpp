@@ -43,12 +43,12 @@ namespace websocket{
         //server connection signal when opening handshake
         typedef boost::signals2::signal<void (shared_ptr<socket>)>      connection_signal;
         //socket connect signal
-        typedef boost::signals2::signal<void ()>                        connect_signal;
-        typedef typename connect_signal::slot_type                      connect_slot;
+        typedef boost::signals2::signal<void ()>                        open_signal;
+        typedef typename open_signal::slot_type                         open_slot;
         
         //when asio socket close, emit
-        typedef boost::signals2::signal<void ()>                        disconnect_signal;
-        typedef typename disconnect_signal::slot_type                   disconnect_slot;
+        typedef boost::signals2::signal<void ()>                        close_signal;
+        typedef typename close_signal::slot_type                        close_slot;
         
         typedef boost::signals2::signal<void (error_code)>               error_signal;
         typedef typename error_signal::slot_type                         error_slot;
@@ -63,8 +63,8 @@ namespace websocket{
         socket(io_service &iosev)
         : _iosev(iosev), _asio_socket(iosev)
         , _state(state_code::connecting)
-        , _sp_connect_signal(new connect_signal)
-        , _sp_disconnect_signal(new disconnect_signal)
+        , _sp_open_signal(new open_signal)
+        , _sp_close_signal(new close_signal)
         , _sp_error_signal(new error_signal)
         , _sp_message_signal(new message_signal)
         , _error_code(error_code::null)
@@ -99,9 +99,9 @@ namespace websocket{
         void error(error_code ec)               { _error_code = ec; }
         
         //emit after success to handshake
-        void on_connect(connect_slot f)         {  _sp_connect_signal->connect(f); }
+        void on_open(open_slot f)         {  _sp_open_signal->connect(f); }
         //emit when socket close(even occur error)
-        void on_disconnect(disconnect_slot f)   {  _sp_disconnect_signal->connect(f); }
+        void on_close(close_slot f)   {  _sp_close_signal->connect(f); }
         //emit when occuring error
         void on_error(error_slot f)             {  _sp_error_signal->connect(f); }
         //emit when receive text payload data.
@@ -113,11 +113,11 @@ namespace websocket{
         
     private:
         void emit_connect(){
-            (*_sp_connect_signal)();
+            (*_sp_open_signal)();
         }
         
         void emit_disconnect(){
-            (*_sp_connect_signal)();
+            (*_sp_close_signal)();
         }
         
         void emit_error(error_code ec){
@@ -151,6 +151,16 @@ namespace websocket{
         friend class server;
 
     private:
+        void emit_open(){
+            (*_sp_open_signal)();
+        }
+        
+        void emit_close(){
+            (*_sp_close_signal)();
+        }
+        
+        
+    private:
         io_service                          &_iosev;
         
         bool                                                        _is_client;
@@ -167,10 +177,10 @@ namespace websocket{
         std::map<shared_ptr<frame>, send_callback_type>             _write_callbacks;
         streambuf                                                   _read_buf;
         
-        shared_ptr<connect_signal>          _sp_connect_signal;
-        shared_ptr<disconnect_signal>       _sp_disconnect_signal;
-        shared_ptr<error_signal>            _sp_error_signal;
-        shared_ptr<message_signal>          _sp_message_signal;
+        shared_ptr<open_signal>                                     _sp_open_signal;
+        shared_ptr<close_signal>                                    _sp_close_signal;
+        shared_ptr<error_signal>                                    _sp_error_signal;
+        shared_ptr<message_signal>                                  _sp_message_signal;
         
         uint16_t                                                    _close_code;
         error_code                                                  _error_code;

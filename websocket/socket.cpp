@@ -181,7 +181,8 @@ namespace websocket{
         if (error() != error_code::null){
             (*_sp_error_signal)(error());
         }
-        (*_sp_disconnect_signal)();
+        
+        emit_close();
     }
 
     void socket::wait_handshake(shared_ptr<server> sp_server){
@@ -321,7 +322,7 @@ namespace websocket{
                     throw std::runtime_error("the Sec-WebSocket-Aceept is not matched. ");
                 }else{
                     self->state(state_code::open);
-                    (*self->_sp_connect_signal)();
+                    self->emit_open();
                     self->do_write();
                     self->do_read();
                 }

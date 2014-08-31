@@ -16,7 +16,7 @@ int main(){
             std::cout << "on message: " << s << std::endl;
         });
         
-        sp_socket->on_disconnect([](){
+        sp_socket->on_close([](){
             std::cout << "socket disconnect. " << std::endl;
         });
     }

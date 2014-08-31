@@ -41,7 +41,7 @@ int main(){
       //  sp_socket->ping("Hi");
         
         //disconnect event
-        sp_socket->on_disconnect([](){
+        sp_socket->on_close([](){
             std::cout << "disconnect. " << std::endl;
         });
     });
