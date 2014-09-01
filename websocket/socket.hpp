@@ -92,6 +92,10 @@ namespace websocket{
             return _state == state_code::closed_clearnly | _state == state_code::closed_not_clearnly;
         }
         
+        std::string path() const{
+            return _url_info.at("path");
+        }
+        
         state_code state() const                { return _state; }
         void state(state_code state)            { _state = state; }
         
@@ -109,6 +113,10 @@ namespace websocket{
         
         ~socket(){
             std::cout << "Release socket. " << std::endl;
+        }
+        
+        io_service &io_service(){
+            return _iosev;
         }
         
     private:
@@ -161,7 +169,7 @@ namespace websocket{
         
         
     private:
-        io_service                          &_iosev;
+        class io_service                                            &_iosev;
         
         bool                                                        _is_client;
         state_code                                                  _state;

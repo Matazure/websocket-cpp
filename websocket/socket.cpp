@@ -213,7 +213,8 @@ namespace websocket{
             if (http_parser_parse_url(global_url.c_str(), global_url.size(), false, p_url)){
                 throw std::runtime_error(global_url+" is invalid.");
             }
-            self->_url_info["path"] = std::string(global_url.begin()+p_url->field_data[3].off, global_url.begin()+p_url->field_data[3].off+p_url->field_data[3].len);
+            self->_url = std::move(global_url);
+            self->_url_info["path"] = std::string(self->_url.begin()+p_url->field_data[3].off, self->_url.begin()+p_url->field_data[3].off+p_url->field_data[3].len);
           
             //create response
             bool handshake = false;
@@ -268,8 +269,12 @@ namespace websocket{
     void socket::handshake(){
         auto key = detail::generate_sec_websocket_key();
         std::string request;
-        request.append("GET /")
-        .append(_url_info["path"]);
+        request.append("GET ");
+        if (_url_info["path"].empty()){
+            request.append("/");
+        }else{
+            request.append(_url_info["path"]);
+        }
         if (!_url_info["query"].empty()){
             request.append("?").append(_url_info["query"]);
         }
