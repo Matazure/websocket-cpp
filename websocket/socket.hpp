@@ -115,10 +115,6 @@ namespace websocket{
             std::cout << "Release socket. " << std::endl;
         }
         
-        io_service &io_service(){
-            return _iosev;
-        }
-        
     private:
         void emit_connect(){
             (*_sp_open_signal)();
