@@ -3,6 +3,7 @@
 #include <map>
 #include <queue>
 #include <functional>
+#include <iostream>
 #include <boost/signals2.hpp>
 #include <boost/asio.hpp>
 
