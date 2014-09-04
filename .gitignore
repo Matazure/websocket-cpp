@@ -4,3 +4,9 @@ out
 .*
 example/basic/client
 example/basic/server
+
+
+*.xcodeproj
+*.Makefile
+*.target.mk
+Makefile
