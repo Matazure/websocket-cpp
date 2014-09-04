@@ -10,3 +10,4 @@ example/basic/server
 *.Makefile
 *.target.mk
 Makefile
+build

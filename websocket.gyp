@@ -9,7 +9,7 @@
             'sources' : ['./websocket/socket.cpp', './websocket/server.cpp'],
             # 'product_dir':'./lib',
 
-            'direct_dependent_settings':{
+            'all_dependent_settings':{
                 'include_dirs': [ '.', '/usr/local/include' ],
             },
 
@@ -21,7 +21,7 @@
                     'link_settings':{
                         'libraries':['libboost_system.a',]
                     },
-                    'direct_dependent_settings':{
+                    'all_dependent_settings':{
                         'xcode_settings':{
                             'LIBRARY_SEARCH_PATHS':['/usr/local/lib',],
                         },
@@ -35,7 +35,7 @@
                         'library_dirs':['/usr/local/lib'],
                         'libraries':['-lboost_system','-lpthread',],
                     },
-                    'direct_dependent_settings':{
+                    'all_dependent_settings':{
                         'link_settings':{
                             'library_dirs':['/usr/local/lib'],
                             'libraries':['-lboost_system', '-lpthread',],
