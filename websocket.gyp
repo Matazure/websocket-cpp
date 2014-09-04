@@ -1,52 +1,5 @@
 {
-    'target_defaults': {
-      'default_configuration': 'Debug',
-      'configurations': {
-        # TODO: hoist these out and put them somewhere common, because
-        #       RuntimeLibrary MUST MATCH across the entire project
-        'Debug': {
-          'defines': [ 'DEBUG', '_DEBUG' ],
-          'cflags': [ '-Wall', '-Wextra', '-O0', '-g', '-ftrapv' ],
-          'xcode_settings':{
-              'OTHER_CPLUSPLUSFLAGS':['-O0']
-          },
-          'msvs_settings': {
-            'VCCLCompilerTool': {
-              'RuntimeLibrary': 1, # static debug
-            },
-          },
-        },
-        'Release': {
-          'defines': [ 'NDEBUG' ],
-          'cflags': [ '-Wall', '-Wextra', '-O3' ],
-          'xcode_settings':{
-              'OTHER_CPLUSPLUSFLAGS':['-Os']
-          },
-          'msvs_settings': {
-            'VCCLCompilerTool': {
-              'RuntimeLibrary': 0, # static release
-            },
-          },
-        }
-      },
-      'msvs_settings': {
-        'VCCLCompilerTool': {
-        },
-        'VCLibrarianTool': {
-        },
-        'VCLinkerTool': {
-          'GenerateDebugInformation': 'true',
-        },
-      },
-      'conditions': [
-        ['OS == "win"', {
-          'defines': [
-            'WIN32'
-          ],
-        }]
-      ],
-    },
-
+    'includes': ['common.gypi',],
     'targets':[
         {
             'target_name' : 'websocket',
@@ -56,67 +9,36 @@
             'sources' : ['./websocket/socket.cpp', './websocket/server.cpp'],
             # 'product_dir':'./lib',
 
-            'all_dependent_settings':
-            {
+            'direct_dependent_settings':{
                 'include_dirs': [ '.', '/usr/local/include' ],
             },
 
             'conditions':[
                 ['OS=="mac"',{
                     'xcode_settings':{
-                        'CLANG_CXX_LANGUAGE_STANDARD': 'c++11',
-                        'CLANG_CXX_LIBRARY': 'libc++',
-                        'CONFIGURATION_BUILD_DIR': './',
                         'LIBRARY_SEARCH_PATHS':['/usr/local/lib',],
-                        'OTHER_CPLUSPLUSFLAGS':['-ftemplate-depth=512'],
                     },
                     'link_settings':{
-                        'libraries':[
-                            'libboost_system.a',
-                        ]
+                        'libraries':['libboost_system.a',]
                     },
-                    'all_dependent_settings':
-                    {
-                        'include_dirs': [ '.' ],
+                    'direct_dependent_settings':{
                         'xcode_settings':{
-                            'CLANG_CXX_LANGUAGE_STANDARD': 'c++11',
-                            'CLANG_CXX_LIBRARY': 'libc++',
-                            'CONFIGURATION_BUILD_DIR': './',
                             'LIBRARY_SEARCH_PATHS':['/usr/local/lib',],
-                            'OTHER_CPLUSPLUSFLAGS':['-ftemplate-depth=512'],
                         },
                         'link_settings':{
-                            'libraries':[
-                                'libboost_system.a',
-                            ]
+                            'libraries':['libboost_system.a',]
                         },
                     }
                 }],
                 ['OS=="linux"', {
-                    'cflags': ['-std=c++11','-lgcc-eh', '-fexceptions', '-frtti'],
-                    'cflags!': ['-fno-exceptions', '-fno-rtti'],
-                    'cflags_cc!': ['-fno-exceptions', '-fno-rtti'],
-
                     'link_settings':{
                         'library_dirs':['/usr/local/lib'],
-                        'libraries':[
-                            '-lboost_system',
-			    '-lpthread',
-                        ],
+                        'libraries':['-lboost_system','-lpthread',],
                     },
-                    'all_dependent_settings':
-                    {
-                        'include_dirs': [ '.' ],
-                        'cflags': ['-std=c++11','-lgcc-eh', '-fexceptions', '-frtti'],
-                        'cflags!': ['-fno-exceptions', '-fno-rtti'],
-                        'cflags_cc!': ['-fno-exceptions', '-fno-rtti'],
-
+                    'direct_dependent_settings':{
                         'link_settings':{
                             'library_dirs':['/usr/local/lib'],
-                            'libraries':[
-                                '-lboost_system',
-				'-lpthread',
-                            ],
+                            'libraries':['-lboost_system', '-lpthread',],
                         },
                     },
                 }],
