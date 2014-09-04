@@ -17,58 +17,58 @@ void clear_http_parser(){
 extern "C"{
     //make sure thread safe, if use  <thread>
     int on_message_begin(http_parser *){
-        
+
         return 0;
     }
-    
-    
+
+
     int on_url(http_parser *, const char *p, size_t len){
         global_url = std::string(p, p+len);
         return 0;
     }
-    
+
     int on_status(http_parser *, const char *p, size_t len){
-        
+
         return 0;
     }
-    
+
     int on_header_field(http_parser *, const char *p, size_t len){
         header_tmp_pair.first = std::string(p, p+len);
         return 0;
     }
-    
+
     int on_header_value(http_parser *, const char *p, size_t len){
         header_tmp_pair.second = std::string(p, p+len);
         global_http_header.insert(header_tmp_pair);
         return 0;
     }
-    
+
     int on_headers_complete(http_parser *){
-        
+
         return 0;
     }
-    
+
     int on_body(http_parser *, const char *p, size_t len){
-        
+
         return 0;
     }
-    
+
     int on_message_complete(http_parser *){
-        
+
         return 0;
     }
-    
+
 }
 
 namespace websocket{
-    
+
     void socket::connect(){
         auto self = shared_from_this();
-        
+
         if (self->_endpoint_iterator == ip::tcp::resolver::iterator()){
             throw std::runtime_error("failed to connect .");
         }
-        
+
         _asio_socket.async_connect(self->_endpoint_iterator->endpoint(), [self](boost::system::error_code ec){
             if (ec){
                 ++self->_endpoint_iterator;
@@ -78,7 +78,7 @@ namespace websocket{
             }
         });
     }
-    
+
     void socket::connect(const std::string &url){
         auto p_url = new http_parser_url;
         if (http_parser_parse_url(url.c_str(), url.size(), false, p_url)){
@@ -89,72 +89,72 @@ namespace websocket{
         _url_info["port"] = std::string(url.begin()+p_url->field_data[2].off, url.begin()+p_url->field_data[2].off+p_url->field_data[2].len);
         _url_info["path"] = std::string(url.begin()+p_url->field_data[3].off, url.begin()+p_url->field_data[3].off+p_url->field_data[3].len);
         _url_info["query"] = std::string(url.begin()+p_url->field_data[4].off, url.begin()+p_url->field_data[4].off+p_url->field_data[4].len);
-        
+
         ip::tcp::resolver resolver(_iosev);
         ip::tcp::resolver::query query(_url_info["host"], _url_info["port"], ip::resolver_query_base::canonical_name);
         _endpoint_iterator = resolver.resolve(query);
         connect();
-        
-        
+
+
 
 //        if (_url_info["scheme"].empty()){
 //            throw std::runtime_error("url scheme field is needed. ");
 //        }
 //        if (_url_info["scheme"] == "wss"){
 //            assert(false);//todo
-//            
+//
 //            return;
 //        }
 //        if (_url_info["scheme"] == "ws"){
-//            
+//
 //            return;
 //        }
 //        throw std::runtime_error("unexpected scheme field.");
     }
-    
+
     void socket::send(const std::string &msg){
         auto sp_frame = make_shared<frame>(msg);
         send_frame(sp_frame);
     }
-    
+
     void socket::send(std::string &&msg){
         auto sp_frame = make_shared<frame>(std::move(msg));
         send_frame(sp_frame);
     }
-    
+
     void socket::ping(const std::string &app_data){
         assert(app_data.size() < 126);
-        
+
         auto sp_frame = frame::create_ping_frame(app_data);
         send_frame(sp_frame);
     }
-    
+
     void socket::pong(const std::string &app_data){
         auto sp_frame = frame::create_pong_frame(app_data);
         send_frame(sp_frame);
     }
-    
+
     void socket::disconnect(){
         disconnect(1001, "");
     }
-    
+
     void socket::disconnect(uint16_t code, const std::string &reason){
         assert(reason.size() < 124);
-        
+
         auto self = shared_from_this();
         auto sp_frame = frame::create_close_frame(code, reason);
         auto f = [self, code](error_code ec){
             if (ec != error_code::null){
                 assert(false);
             }
-            
+
             self->_close_code = code;
             self->state(state_code::closing);
         };
-        
+
         send_frame(sp_frame, f);
     }
-    
+
     void socket::send_frame(shared_ptr<frame> sp_frame, send_callback_type f){
         auto self = shared_from_this();
         _iosev.post([self, sp_frame, f](){
@@ -166,7 +166,7 @@ namespace websocket{
             }
         });
     }
-    
+
     void socket::abnormally_close(error_code ec){
         if (is_closed()){
             return; //do none
@@ -175,13 +175,13 @@ namespace websocket{
             close_tcp_socket();
         }
     }
-    
+
     void socket::close_tcp_socket(){
         _asio_socket.close();
         if (error() != error_code::null){
             (*_sp_error_signal)(error());
         }
-        
+
         emit_close();
     }
 
@@ -194,7 +194,7 @@ namespace websocket{
             std::string request;
             request.resize(len);
             self->_read_buf.sgetn(reinterpret_cast<char *>(&request[0]), len);
-            
+
             http_parser request_parser;
             http_parser_init(&request_parser, HTTP_REQUEST);
             http_parser_settings settings;
@@ -215,7 +215,7 @@ namespace websocket{
             }
             self->_url = std::move(global_url);
             self->_url_info["path"] = std::string(self->_url.begin()+p_url->field_data[3].off, self->_url.begin()+p_url->field_data[3].off+p_url->field_data[3].len);
-          
+
             //create response
             bool handshake = false;
             auto key = self->_header["Sec-WebSocket-Key"];
@@ -238,8 +238,8 @@ namespace websocket{
 //                    .append("\r\r");
 //                }
 //                if (!self->_header["Sec-WebSocket-Protocol"].empty()){
-//                    
-//                    
+//
+//
 //                    //select a protocol
 //                    response.append("Sec-WebSocket-Protocol: ")
 //                    .append(self->_header["Sec-WebSocket-Version"])
@@ -279,7 +279,7 @@ namespace websocket{
             request.append("?").append(_url_info["query"]);
         }
         request.append(" HTTP/1.1\r\n");
-        
+
         request.append("Upgrade: websocket\r\n");
         request.append("Host: ")
         .append(_url_info["host"]);
@@ -292,7 +292,7 @@ namespace websocket{
        // request.append("Sec-WebSocket-Protocol: chat, superchat\r\n");
         request.append("Sec-WebSocket-Version: 13\r\n");  //must  has
         request.append("\r\n");
-        
+
         auto accept = detail::generate_sec_websocket_accept(key);
         auto self = shared_from_this();
         async_write(_asio_socket, buffer(request), [self, accept](boost::system::error_code ec, size_t){
@@ -304,11 +304,11 @@ namespace websocket{
                 if (ec){
                     return;
                 }
-                
+
                 std::string response;
                 response.resize(len);
                 self->_read_buf.sgetn(&response[0], len);
-                
+
                 http_parser request_parser;
                 http_parser_init(&request_parser, HTTP_RESPONSE);
                 http_parser_settings settings;
@@ -322,7 +322,7 @@ namespace websocket{
                 settings.on_message_complete = on_message_complete;
                 http_parser_execute(&request_parser, &settings, response.c_str(), response.size());
                 self->_header = std::move(global_http_header);
-             
+
                 if (self->_header["Sec-WebSocket-Accept"] != accept){
                     throw std::runtime_error("the Sec-WebSocket-Aceept is not matched. ");
                 }else{
@@ -337,7 +337,7 @@ namespace websocket{
 
     void socket::do_read(){
         using detail::get_close_code;
-        
+
         auto self = shared_from_this();
         auto needed_size = std::max(int64_t(0), int64_t(2 - self->_read_buf.size()));
         auto mut_buf = self->_read_buf.prepare(needed_size);
@@ -347,7 +347,7 @@ namespace websocket{
                 self->abnormally_close(error_code::transmition);
                 return;
             }
-            
+
             auto sp_frame = make_shared<detail::frame>();
             self->_read_buf.sgetn(reinterpret_cast<char *>(&(sp_frame->header)), 2);
             if(sp_frame->header.fin() == 0)         assert(false);
@@ -355,7 +355,7 @@ namespace websocket{
                 self->abnormally_close(error_code::protocol);
                 return;
             }
-            
+
             auto receive_payload = [self, sp_frame](){
                 auto needed_size = std::max(int64_t(0), int64_t(sp_frame->payload_length() - self->_read_buf.size()));
                 auto mut_buf = self->_read_buf.prepare(needed_size);
@@ -365,15 +365,15 @@ namespace websocket{
                         self->abnormally_close(error_code::transmition);
                         return;
                     }
-                    
+
                     sp_frame->resize_payload();
                     self->_read_buf.sgetn(reinterpret_cast<char *>(&(sp_frame->payload[0])), sp_frame->payload.size());
                     assert(self->_read_buf.size() == 0);
-                    
+
                     if (sp_frame->header.masked()){
                         sp_frame->unmask();
                     }
-                    
+
                     switch (sp_frame->header.opcode()){
                         case 0x00:
                             assert(false);
@@ -400,7 +400,7 @@ namespace websocket{
                                     if (ec != error_code::null){
                                         assert(false);
                                     }
-                                    
+
                                     self->state(state_code::closed_clearnly);
                                     self->close_tcp_socket();
                                 });
@@ -414,11 +414,11 @@ namespace websocket{
                         default:
                             assert(false);
                     }
-                    
+
                     self->do_read();
                 });
             };
-            
+
             auto receive_mask_and_payload = [self, sp_frame, receive_payload](){
                 if (sp_frame->header.masked()){
                     auto needed_size = std::max(int64_t(0), int64_t(4 - self->_read_buf.size()));
@@ -429,16 +429,16 @@ namespace websocket{
                             self->abnormally_close(error_code::transmition);
                             return;
                         }
-                        
+
                         self->_read_buf.sgetn(reinterpret_cast<char *>(&(sp_frame->mask_key[0])), 4);
                         receive_payload();
                     });
-                    
+
                 }else{
                     receive_payload();
                 }
             };
-            
+
             if (sp_frame->header.payload_length() == 126){
                 auto needed_size = std::max(int64_t(0), int64_t(2 - self->_read_buf.size()));
                 auto mut_buf = self->_read_buf.prepare(needed_size);
@@ -448,7 +448,7 @@ namespace websocket{
                         self->abnormally_close(error_code::transmition);
                         return;
                     }
-                    
+
                     self->_read_buf.sgetn(reinterpret_cast<char *>(&(sp_frame->extended_payload_length16)), 2);
                     receive_mask_and_payload();
                 });
@@ -461,7 +461,7 @@ namespace websocket{
                         self->abnormally_close(error_code::transmition);
                         return;
                     }
-                    
+
                     self->_read_buf.sgetn(reinterpret_cast<char *>(&(sp_frame->extended_payload_length64)), 8);
                     receive_mask_and_payload();
                 });
@@ -470,19 +470,19 @@ namespace websocket{
             }
         });
     }
-    
+
     void socket::do_write(){
         if (_frames.empty() || !is_open()){
             return;
         }
-        
+
         auto sp_frame = _frames.front();
         _frames.pop();
-        
+
         if (is_client()){
             sp_frame->mask();
         }
-        
+
         streambuf buf;
         std::ostream os(&buf);
         detail::write_frame(os, *sp_frame);
@@ -502,5 +502,5 @@ namespace websocket{
         });
     }
 
-    
+
 }
