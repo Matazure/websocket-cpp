@@ -101,6 +101,7 @@
                         'library_dirs':['/usr/local/lib'],
                         'libraries':[
                             '-lboost_system',
+			    '-lpthread',
                         ],
                     },
                     'all_dependent_settings':
@@ -114,6 +115,7 @@
                             'library_dirs':['/usr/local/lib'],
                             'libraries':[
                                 '-lboost_system',
+				'-lpthread',
                             ],
                         },
                     },
