@@ -20,7 +20,7 @@ Install
 --------
 It's based on boost library(inlucde asio, signals, uuid, archive) and http-parser library(included by weboskcet). We build the websocket by gyp, you should know it.
   1. you should install boost and download http-parser.
-  2. edit the websocket.gyp for the boost include and library path.
+  2. edit the websocket.gyp for the boost include and library path or set varialbe by gyp -D <varialbe>=<value>.
   3. build the project, and use the websocket include files and library file by youself
   4. If you also use gyp to build you application as example basic, you needn't do the step3.
   
@@ -45,9 +45,10 @@ int main(){
         sp_socket->send("I'm from server.");
         
         //message event
-        sp_socket->on_message([sp_socket](const std::string &s){
-            std::cout << "on message: " << s << std::endl;
-        });
+        //sp_socket->on_message([sp_socket](const std::string &s){
+        //    std::cout << "on message: " << s << std::endl;
+        //});
+        //circular reference
         
         //error event
         sp_socket->on_error([](websocket::error_code ec){
