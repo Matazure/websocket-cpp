@@ -95,8 +95,6 @@ namespace websocket{
         _endpoint_iterator = resolver.resolve(query);
         connect();
 
-
-
 //        if (_url_info["scheme"].empty()){
 //            throw std::runtime_error("url scheme field is needed. ");
 //        }
