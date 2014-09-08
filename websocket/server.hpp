@@ -30,7 +30,7 @@ namespace websocket{
 //            _sp_connection_signal->connect(callback);
             of("/")->on_connection(callback);
         }
-        
+
         void on_listening(listening_slot f){
             _sp_listening_signal->connect(f);
         }
@@ -47,7 +47,7 @@ namespace websocket{
 
     private:
         void do_accept();
-        
+
         void emit_listening(){
             auto self = shared_from_this();
             _iosev.post([self](){
