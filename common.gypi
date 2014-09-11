@@ -9,7 +9,7 @@
                     'OTHER_CPLUSPLUSFLAGS':['-O0'],
                     'CLANG_CXX_LANGUAGE_STANDARD': 'c++11',
                     'CLANG_CXX_LIBRARY': 'libc++',
-                    'CONFIGURATION_BUILD_DIR': './',
+                    # 'CONFIGURATION_BUILD_DIR': './',
                 },
             },
             'Release': {
@@ -19,7 +19,7 @@
                     'OTHER_CPLUSPLUSFLAGS':['-Os'],
                     'CLANG_CXX_LANGUAGE_STANDARD': 'c++11',
                     'CLANG_CXX_LIBRARY': 'libc++',
-                    'CONFIGURATION_BUILD_DIR': './',
+                    # 'CONFIGURATION_BUILD_DIR': './',
                 },
             },
         },
