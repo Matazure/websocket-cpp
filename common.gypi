@@ -4,7 +4,7 @@
         'configurations': {
             'Debug': {
                 'defines': [ 'DEBUG', '_DEBUG' ],
-                'cflags': ['-std=c++11', '-w', '-O0', '-g', '-ftrapv', '-fPIC' ],
+                'cflags': ['-std=c++11', '-W', '-O0', '-g', '-ftrapv', '-fPIC' ],
                 'xcode_settings':{
                     'OTHER_CPLUSPLUSFLAGS':['-O0'],
                     'CLANG_CXX_LANGUAGE_STANDARD': 'c++11',
