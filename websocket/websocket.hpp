@@ -11,13 +11,13 @@ namespace websocket{
 //        return sp_socket;
 //    }
 
-    inline shared_ptr<server> listen(io_service &iosev, size_t port){
+    inline shared_ptr<server> listen(asio::io_service &iosev, size_t port){
         auto sp_server = make_shared<server>(iosev);
         sp_server->listen(port);
         return sp_server;
     }
 
-    inline shared_ptr<socket> connect(io_service &iosev, const std::string &url){
+    inline shared_ptr<socket> connect(asio::io_service &iosev, const std::string &url){
         auto sp_socket = make_shared<socket>(iosev);
         sp_socket->connect(url);
         return sp_socket;

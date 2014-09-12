@@ -65,7 +65,7 @@ namespace websocket{
     void socket::connect(){
         auto self = shared_from_this();
 
-        if (self->_endpoint_iterator == ip::tcp::resolver::iterator()){
+        if (self->_endpoint_iterator == asio::ip::tcp::resolver::iterator()){
             throw std::runtime_error("failed to connect .");
         }
 
@@ -90,8 +90,8 @@ namespace websocket{
         _url_info["path"] = std::string(url.begin()+p_url->field_data[3].off, url.begin()+p_url->field_data[3].off+p_url->field_data[3].len);
         _url_info["query"] = std::string(url.begin()+p_url->field_data[4].off, url.begin()+p_url->field_data[4].off+p_url->field_data[4].len);
 
-        ip::tcp::resolver resolver(_iosev);
-        ip::tcp::resolver::query query(_url_info["host"], _url_info["port"], ip::resolver_query_base::canonical_name);
+        asio::ip::tcp::resolver resolver(_iosev);
+        asio::ip::tcp::resolver::query query(_url_info["host"], _url_info["port"], asio::ip::resolver_query_base::canonical_name);
         _endpoint_iterator = resolver.resolve(query);
         connect();
 
@@ -248,7 +248,7 @@ namespace websocket{
             }
             clear_http_parser();
             //send response
-            async_write(self->_asio_socket, buffer(response), [self, sp_server, handshake](boost::system::error_code ec, size_t){
+            async_write(self->_asio_socket, asio::buffer(response), [self, sp_server, handshake](boost::system::error_code ec, size_t){
                 if (ec){
                     return;  //do none
                 }
@@ -293,7 +293,7 @@ namespace websocket{
 
         auto accept = detail::generate_sec_websocket_accept(key);
         auto self = shared_from_this();
-        async_write(_asio_socket, buffer(request), [self, accept](boost::system::error_code ec, size_t){
+        async_write(_asio_socket, asio::buffer(request), [self, accept](boost::system::error_code ec, size_t){
             if (ec){
                 assert(false);  ///\Todo
             }
@@ -481,7 +481,7 @@ namespace websocket{
             sp_frame->mask();
         }
 
-        streambuf buf;
+        asio::streambuf buf;
         std::ostream os(&buf);
         detail::write_frame(os, *sp_frame);
         auto self = shared_from_this();

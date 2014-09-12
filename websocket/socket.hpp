@@ -7,9 +7,10 @@
 #include <boost/signals2.hpp>
 #include <boost/asio.hpp>
 
+
 namespace websocket{
 
-    using namespace boost::asio;
+    namespace asio = boost::asio;
     using std::make_shared;
     using std::shared_ptr;
     using std::enable_shared_from_this;
@@ -61,7 +62,7 @@ namespace websocket{
 
 
     public:
-        socket(io_service &iosev)
+        socket(asio::io_service &iosev)
         : _iosev(iosev), _asio_socket(iosev)
         , _state(state_code::connecting)
         , _sp_open_signal(new open_signal)
@@ -166,7 +167,7 @@ namespace websocket{
 
 
     private:
-        class io_service                                            &_iosev;
+        asio::io_service                                            &_iosev;
 
         bool                                                        _is_client;
         state_code                                                  _state;
@@ -175,12 +176,12 @@ namespace websocket{
         std::string                                                 _url;
         std::map<std::string, std::string>                          _url_info;
         std::map<std::string, std::string>                          _header;
-        ip::tcp::resolver::iterator                                 _endpoint_iterator;
+        asio::ip::tcp::resolver::iterator                                 _endpoint_iterator;
 
-        ip::tcp::socket                                             _asio_socket;
+        asio::ip::tcp::socket                                             _asio_socket;
         std::queue<shared_ptr<frame>>                               _frames;
         std::map<shared_ptr<frame>, send_callback_type>             _write_callbacks;
-        streambuf                                                   _read_buf;
+        asio::streambuf                                                   _read_buf;
 
         shared_ptr<open_signal>                                     _sp_open_signal;
         shared_ptr<close_signal>                                    _sp_close_signal;

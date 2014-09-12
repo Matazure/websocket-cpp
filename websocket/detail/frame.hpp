@@ -80,7 +80,7 @@ namespace websocket{ namespace detail{
 
         void unmask(){
             //auto mask = header.mask_key;
-            for (int i = 0; i < payload.size(); ++i){
+            for (size_t i = 0; i < payload.size(); ++i){
                 payload[i] ^= mask_key[i%4];
             }
         }
@@ -90,7 +90,7 @@ namespace websocket{ namespace detail{
             srand(static_cast<unsigned>(time(nullptr)));
             auto ran = static_cast<int32_t>(rand());
             memcpy(&(mask_key[0]), &ran, 4);
-            for (int i = 0; i < payload.size(); ++i){
+            for (size_t i = 0; i < payload.size(); ++i){
                 payload[i] ^= mask_key[i%4];
             }
         }
