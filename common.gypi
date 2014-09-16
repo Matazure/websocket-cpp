@@ -24,4 +24,10 @@
             },
         },
     },
+
+    'variables':{
+        'BOOST_INCLUDE_DIR%': '/usr/local/include',
+        'BOOST_LIBRARY_DIR%': '/usr/local/lib',
+    },
+
 }
