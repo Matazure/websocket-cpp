@@ -1,0 +1,41 @@
+<html>
+    <script>
+        var connection = new WebSocket('ws://localhost:4232');
+        connection.onopen = function () {
+            var s = (new Array(130)).toString();
+            console.log("send string length: ", s.length);
+            connection.send(s);
+
+            var s1 = (new Array(65536)).toString();
+            console.log("send string length: ", s1.length);
+            connection.send(s1);
+
+            var s1 = (new Array(65557)).toString();
+            console.log("send string length: ", s1.length);
+            connection.send(s1);
+
+
+            var s2 = (new Array(1024*1024)).toString();
+            console.log("send string length: ", s2.length);
+            connection.send(s2);
+
+            var s2 = (new Array(1<<25)).toString();
+            console.log("send string length: ", s2.length);
+            connection.send(s2);
+        };
+
+        // Log errors
+        connection.onerror = function (error) {
+          console.log('WebSocket Error ' + error);
+        };
+
+        // Log messages from the server
+        connection.onmessage = function (e) {
+          console.log('Server message size: ' + e.data.length);
+        };
+
+        connection.onclose = function(e){
+            console.log("close");
+        }
+    </script>
+<html>

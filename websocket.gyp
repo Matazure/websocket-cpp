@@ -44,5 +44,37 @@
                 }],
             ],
         },
+
+        {
+            'target_name' : 'example_basic_client',
+            'type' : 'executable',
+            'dependencies': ['websocket'],
+            'sources' : ['example/basic/client.cpp'],
+            'product_extension' : 'out',
+        },
+
+        {
+            'target_name' : 'example_basic_server',
+            'type' : 'executable',
+            'dependencies': ['websocket'],
+            'sources' : ['example/basic/server.cpp'],
+            'product_extension' : 'out',
+        },
+
+        {
+            'target_name' : "example_large_data_server",
+            'type': 'executable',
+            'dependencies': ['websocket'],
+            'sources':['example/large_data/server.cpp'],
+            'product_extension':'out',
+        },
+
+        {
+            'target_name' : "example_large_data_client",
+            'type': 'executable',
+            'dependencies': ['websocket'],
+            'sources':['example/large_data/client.cpp'],
+            'product_extension':'out',
+        },
     ]
 }

@@ -4,6 +4,8 @@
 #include <array>
 #include <vector>
 #include <iostream>
+#include <boost/endian/detail/disable_warnings.hpp>
+#include <boost/endian/conversion.hpp>
 
 namespace websocket{ namespace detail{
 
@@ -120,8 +122,8 @@ namespace websocket{ namespace detail{
         }
 
         header                  header;
-        int16_t                 extended_payload_length16;
-        int64_t                 extended_payload_length64;
+        uint16_t                 extended_payload_length16;
+        uint64_t                 extended_payload_length64;
         std::array<uint8_t, 4>  mask_key;
         std::string             payload;
         
@@ -167,7 +169,7 @@ namespace websocket{ namespace detail{
             header.masked(0);
             if (payload.size() < 126){
                 header.payload_length(payload.size());
-            }else if(payload.size() < std::numeric_limits<uint16_t>::max()){
+            }else if(payload.size() <= std::numeric_limits<uint16_t>::max()){
                 header.payload_length(126);
                 extended_payload_length16 = payload.size();
             }else{
@@ -186,10 +188,14 @@ namespace websocket{ namespace detail{
         write_header(os, frame.header);
 
         if (frame.header.payload_length() == 126){
-            os.write(reinterpret_cast<const char *>(&(frame.extended_payload_length16)), 2);
+            auto tmp = frame.extended_payload_length16;
+            boost::endian::convert<boost::endian::order::native, boost::endian::order::big>(tmp);
+            os.write(reinterpret_cast<const char *>(&tmp), 2);
         }
         if (frame.header.payload_length() == 127){
-            os.write(reinterpret_cast<const char *>(&(frame.extended_payload_length64)), 8);
+            auto tmp = frame.extended_payload_length64;
+            boost::endian::convert<boost::endian::order::native, boost::endian::order::big>(tmp);
+            os.write(reinterpret_cast<const char *>(&tmp), 8);
         }
         if (frame.header.masked()){
             os.write(reinterpret_cast<const char *>(&(frame.mask_key[0])), 4);

@@ -14,6 +14,7 @@ namespace websocket{
     using std::make_shared;
     using std::shared_ptr;
     using std::enable_shared_from_this;
+    using asio::io_service;
 
     class server;
 

@@ -6,6 +6,7 @@
 #include <websocket/detail/frame.hpp>
 #include <websocket/detail/utilities.hpp>
 
+
 std::pair<std::string, std::string>     header_tmp_pair;
 std::map<std::string, std::string>      global_http_header;
 std::string                             global_url;
@@ -61,7 +62,7 @@ extern "C"{
 }
 
 namespace websocket{
-
+    
     void socket::connect(){
         auto self = shared_from_this();
 
@@ -448,6 +449,7 @@ namespace websocket{
                     }
 
                     self->_read_buf.sgetn(reinterpret_cast<char *>(&(sp_frame->extended_payload_length16)), 2);
+                    boost::endian::convert<boost::endian::order::big, boost::endian::order::native>(sp_frame->extended_payload_length16);
                     receive_mask_and_payload();
                 });
             }else if(sp_frame->header.payload_length() == 127){
@@ -461,6 +463,7 @@ namespace websocket{
                     }
 
                     self->_read_buf.sgetn(reinterpret_cast<char *>(&(sp_frame->extended_payload_length64)), 8);
+                    boost::endian::convert<boost::endian::order::big, boost::endian::order::native>(sp_frame->extended_payload_length64);
                     receive_mask_and_payload();
                 });
             }else{
@@ -475,7 +478,6 @@ namespace websocket{
         }
 
         auto sp_frame = _frames.front();
-        _frames.pop();
 
         if (is_client()){
             sp_frame->mask();
@@ -485,18 +487,20 @@ namespace websocket{
         std::ostream os(&buf);
         detail::write_frame(os, *sp_frame);
         auto self = shared_from_this();
-        async_write(_asio_socket, buf, [self, sp_frame](boost::system::error_code ec, size_t len){
+        async_write(_asio_socket, asio::buffer(buf.data(), buf.size()), [self, sp_frame](boost::system::error_code ec, size_t len){
             auto error = error_code::transmition;
             if (ec || len == 0){
                 error = error_code::transmition;
                 self->abnormally_close(error);
             }else{
                 error = error_code::null;
-                self->do_write();
             }
             if (self->_write_callbacks[sp_frame]){
                 self->_write_callbacks[sp_frame](error);
             }
+            
+            self->_frames.pop();
+            self->do_write();
         });
     }
 
