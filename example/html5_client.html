@@ -1,6 +1,7 @@
 <html>
     <script>
         var connection = new WebSocket('ws://localhost:4231');
+
         connection.onopen = function () {
           connection.send('Pong'); // Send the message 'Ping' to the server
           connection.send("54321");
@@ -14,6 +15,10 @@
         // Log messages from the server
         connection.onmessage = function (e) {
           console.log('Server: ' + e.data);
+
+          if (e.data == "close"){
+              connection.close();
+          }
         };
 
         connection.onclose = function(e){

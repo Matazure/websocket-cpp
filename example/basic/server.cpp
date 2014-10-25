@@ -21,6 +21,7 @@ int main(){
         //send message
         sp_socket->send("0{\"sid\":\"9SKCOKQByerbNyuiAAAA\",\"upgrades\":[],\"pingInterval\":25000,\"pingTimeout\":60000}");
         sp_socket->send("4Hi client.");
+        sp_socket->send("close");
         
         //message event
         auto wp_socket = std::weak_ptr<websocket::socket>(sp_socket);
@@ -36,10 +37,7 @@ int main(){
             std::cout << "unexpected error" << std::endl;
            // std::cout << "error with code: " << ec << std::endl;
         });
-        
-        //send ping control frame
-      //  sp_socket->ping("Hi");
-        
+
         //disconnect event
         sp_socket->on_close([](){
             std::cout << "disconnect. " << std::endl;

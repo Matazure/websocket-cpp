@@ -119,23 +119,6 @@ namespace websocket{
         }
 
     private:
-        void emit_connect(){
-            (*_sp_open_signal)();
-        }
-
-        void emit_disconnect(){
-            (*_sp_close_signal)();
-        }
-
-        void emit_error(error_code ec){
-            (*_sp_error_signal)(ec);
-        }
-
-        void emit_message(const std::string &msg){
-            (*_sp_message_signal)(msg);
-        }
-
-    private:
 
         void connect();
 
@@ -158,6 +141,15 @@ namespace websocket{
         friend class server;
 
     private:
+        
+        void emit_error(error_code ec){
+            (*_sp_error_signal)(ec);
+        }
+        
+        void emit_message(const std::string &msg){
+            (*_sp_message_signal)(msg);
+        }
+        
         void emit_open(){
             (*_sp_open_signal)();
         }
